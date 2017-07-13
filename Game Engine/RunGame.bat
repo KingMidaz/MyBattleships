@@ -1,0 +1,1 @@
+Battleships.exe -b "..\Bots\C#" "..\Bots\C#" --clog --pretty

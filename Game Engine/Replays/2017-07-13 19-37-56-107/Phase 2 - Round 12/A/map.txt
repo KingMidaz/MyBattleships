@@ -1,0 +1,47 @@
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Game Version : 1.0.0
+Game Level : 1
+Round Number : 12
+Map Dimensions : 10 x 10
+Phase : 2
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+########## Player
+~~~~~~~~~~
+~~~~~~~~~~
+~~~~~~~~~~
+~~~~~~~~~~
+~~~~~~~~~~
+~~CCCCC~~~
+RRR~~~SSS~
+dD~~~~~~~~
+~~~~~BbBb~
+~~~~~~~~~~
+########## Opponent
+~~~~~~~~~~
+~~~~~~~~~~
+~~~~~~~~~~
+~~~~~~~~~~
+~~~~~~~~~~
+~~~~~~~~~~
+~~~~~~~~~~
+!~~~~~~~~~
+!~!~!~!~*~
+!~!~!~*~!~
+##########
+
+---------------------------
+Player Name: John
+Available Energy: 25
+Shots: 11
+Hit: 2
+Points: 20
+Arsenal: [SingleShot,SeekerMissle,DoubleShot,DiagonalCrossShot,CornerShot,CrossShot]
+Ships: [Submarine,Destroyer,Battle Ship,Carrier,Cruiser]
+Status: Alive
+---------------------------
+Opponent: John
+Points: 30
+Ships: [Submarine,Destroyer,Battle Ship,Carrier,Cruiser]
+Status: Alive
+---------------------------

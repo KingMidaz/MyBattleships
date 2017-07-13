@@ -1,0 +1,21 @@
+
+13-07-2017 19:38:29:234 - I: 	Executing process  A "C:\Users\Dscra\Downloads\Game.Engine.-.Version.1.1.2\Game Engine - Version 1.1.2\Version 1.1.2\Game Engine\Replays\2017-07-13 19-38-28-370\Phase 1 - Round 0\A"
+13-07-2017 19:38:29:234 - E: 	Failed to run calibration test System.InvalidOperationException: Cannot start process because a file name has not been provided.
+   at System.Diagnostics.Process.Start()
+   at BotRunner.Util.ProcessHandler.StartProcessCommon() in C:\Development\Entelect Challenge\2017-Battleships\GameEngine\Battleships\BotRunner\Util\ProcessHandler.cs:line 87
+   at BotRunner.Util.ProcessHandler.RunProcess() in C:\Development\Entelect Challenge\2017-Battleships\GameEngine\Battleships\BotRunner\Util\ProcessHandler.cs:line 79
+   at TestHarness.TestHarnesses.Bot.Runners.DotNetRunner.RunCalibrationTest() in C:\Development\Entelect Challenge\2017-Battleships\GameEngine\Battleships\BotRunner\Harness\Bot\Runners\DotNetRunner.cs:line 41
+   at TestHarness.TestHarnesses.Bot.BotRunner.CalibrateBot() in C:\Development\Entelect Challenge\2017-Battleships\GameEngine\Battleships\BotRunner\Harness\Bot\BotRunner.cs:line 41
+13-07-2017 19:38:29:234 - I: 	Bot calibration complete and can run an additional 8ms due to environment startup
+13-07-2017 19:38:29:250 - D: 	Executing bot with following commands ..\Reference Bots\C#\ReferenceBot.exe A "C:\Users\Dscra\Downloads\Game.Engine.-.Version.1.1.2\Game Engine - Version 1.1.2\Version 1.1.2\Game Engine\Replays\2017-07-13 19-38-28-370\Phase 1 - Round 0\A"
+13-07-2017 19:38:29:250 - I: 	Executing process ..\Reference Bots\C#\ReferenceBot.exe A "C:\Users\Dscra\Downloads\Game.Engine.-.Version.1.1.2\Game Engine - Version 1.1.2\Version 1.1.2\Game Engine\Replays\2017-07-13 19-38-28-370\Phase 1 - Round 0\A"
+13-07-2017 19:38:29:250 - I: 	Bot has 4000ms to run before it will be forcefully killed
+13-07-2017 19:38:29:478 - I: 	Output from bot: [BOT]	Placeship command: Battleship 1 8 South
+13-07-2017 19:38:29:478 - I: 	Output from bot: Carrier 2 6 South
+13-07-2017 19:38:29:478 - I: 	Output from bot: Cruiser 8 4 North
+13-07-2017 19:38:29:478 - I: 	Output from bot: Destroyer 4 3 North
+13-07-2017 19:38:29:478 - I: 	Output from bot: Submarine 4 0 North
+13-07-2017 19:38:29:478 - I: 	Output from bot: [BOT]	Bot finished in 190 ms.
+13-07-2017 19:38:29:480 - I: 	Output from bot: 
+13-07-2017 19:38:29:480 - E: 	Output from bot: 
+13-07-2017 19:38:29:482 - I: 	Your bots total execution time was 00:00:00.2294371
