@@ -1,0 +1,47 @@
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Game Version : 1.0.0
+Game Level : 1
+Round Number : 27
+Map Dimensions : 10 x 10
+Phase : 2
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+########## Player
+~~~~~~~~~~
+~~~~~BRRr~
+~~~~~B~~~~
+~~~~~BC~~~
+~~~~~bCS~~
+~~~~~~cS~~
+D~~~~~Cs~~
+D~~~~~C~~~
+~~~~~~~~~~
+~~~~~~~~~~
+########## Opponent
+~~~~~~~~~~
+~~~~~~~~~~
+!~~~~~~~~~
+~~~~!~!~!~
+!~!~~~~~~~
+!~*~*~!~!~
+~~!~!~!~!~
+!~~~~~~~~~
+!~*~*~!~!~
+!~!~!~!~!~
+##########
+
+---------------------------
+Player Name: Default
+Available Energy: 9
+Shots: 26
+Hit: 4
+Points: 40
+Arsenal: [SingleShot,SeekerMissle,DoubleShot,DiagonalCrossShot,CornerShot,CrossShot]
+Ships: [Submarine,Destroyer,Battle Ship,Carrier,Cruiser]
+Status: Alive
+---------------------------
+Opponent: C++ Sample Bot
+Points: 40
+Ships: [Submarine,Destroyer,Battle Ship,Carrier,Cruiser]
+Status: Alive
+---------------------------

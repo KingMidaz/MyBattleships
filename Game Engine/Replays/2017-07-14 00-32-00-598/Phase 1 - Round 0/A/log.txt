@@ -1,0 +1,15 @@
+
+14-07-2017 00:32:01:665 - I: 	Executing process  A "C:\Users\Dscra\Documents\MyBattleships\Game Engine\Replays\2017-07-14 00-32-00-598\Phase 1 - Round 0\A"
+14-07-2017 00:32:01:669 - E: 	Failed to run calibration test System.InvalidOperationException: Cannot start process because a file name has not been provided.
+   at System.Diagnostics.Process.Start()
+   at BotRunner.Util.ProcessHandler.StartProcessCommon() in C:\Development\Entelect Challenge\2017-Battleships\GameEngine\Battleships\BotRunner\Util\ProcessHandler.cs:line 87
+   at BotRunner.Util.ProcessHandler.RunProcess() in C:\Development\Entelect Challenge\2017-Battleships\GameEngine\Battleships\BotRunner\Util\ProcessHandler.cs:line 79
+   at TestHarness.TestHarnesses.Bot.Runners.DotNetRunner.RunCalibrationTest() in C:\Development\Entelect Challenge\2017-Battleships\GameEngine\Battleships\BotRunner\Harness\Bot\Runners\DotNetRunner.cs:line 41
+   at TestHarness.TestHarnesses.Bot.BotRunner.CalibrateBot() in C:\Development\Entelect Challenge\2017-Battleships\GameEngine\Battleships\BotRunner\Harness\Bot\BotRunner.cs:line 41
+14-07-2017 00:32:01:669 - I: 	Bot calibration complete and can run an additional 6ms due to environment startup
+14-07-2017 00:32:01:680 - D: 	Executing bot with following commands ..\Bots\MyBotExec\MyBot.exe A "C:\Users\Dscra\Documents\MyBattleships\Game Engine\Replays\2017-07-14 00-32-00-598\Phase 1 - Round 0\A"
+14-07-2017 00:32:01:680 - I: 	Executing process ..\Bots\MyBotExec\MyBot.exe A "C:\Users\Dscra\Documents\MyBattleships\Game Engine\Replays\2017-07-14 00-32-00-598\Phase 1 - Round 0\A"
+14-07-2017 00:32:01:688 - I: 	Bot has 4000ms to run before it will be forcefully killed
+14-07-2017 00:32:01:705 - I: 	Output from bot: 
+14-07-2017 00:32:01:705 - E: 	Output from bot: 
+14-07-2017 00:32:01:705 - I: 	Your bots total execution time was 00:00:00.0247409
