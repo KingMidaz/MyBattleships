@@ -1,9 +1,0 @@
-
-14-07-2017 00:32:14:214 - D: 	Executing bot with following commands ..\Bots\C#\ReferenceBot.exe B "C:\Users\Dscra\Documents\MyBattleships\Game Engine\Replays\2017-07-14 00-32-00-598\Phase 2 - Round 20\B"
-14-07-2017 00:32:14:214 - I: 	Executing process ..\Bots\C#\ReferenceBot.exe B "C:\Users\Dscra\Documents\MyBattleships\Game Engine\Replays\2017-07-14 00-32-00-598\Phase 2 - Round 20\B"
-14-07-2017 00:32:14:217 - I: 	Bot has 4000ms to run before it will be forcefully killed
-14-07-2017 00:32:14:432 - I: 	Output from bot: [BOT]	Command: 1,8,4
-14-07-2017 00:32:14:432 - I: 	Output from bot: [BOT]	Bot finished in 182 ms.
-14-07-2017 00:32:14:438 - I: 	Output from bot: 
-14-07-2017 00:32:14:438 - E: 	Output from bot: 
-14-07-2017 00:32:14:440 - I: 	Your bots total execution time was 00:00:00.2243766

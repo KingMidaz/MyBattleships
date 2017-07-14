@@ -1,7 +1,0 @@
-
-14-07-2017 00:32:58:881 - D: 	Executing bot with following commands ..\Bots\MyBotExec\MyBot.exe A "C:\Users\Dscra\Documents\MyBattleships\Game Engine\Replays\2017-07-14 00-32-00-598\Phase 2 - Round 93\A"
-14-07-2017 00:32:58:881 - I: 	Executing process ..\Bots\MyBotExec\MyBot.exe A "C:\Users\Dscra\Documents\MyBattleships\Game Engine\Replays\2017-07-14 00-32-00-598\Phase 2 - Round 93\A"
-14-07-2017 00:32:58:885 - I: 	Bot has 4000ms to run before it will be forcefully killed
-14-07-2017 00:32:58:903 - I: 	Output from bot: 
-14-07-2017 00:32:58:903 - E: 	Output from bot: 
-14-07-2017 00:32:58:903 - I: 	Your bots total execution time was 00:00:00.0217837

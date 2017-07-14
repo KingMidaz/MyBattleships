@@ -1,1 +1,1 @@
-Battleships.exe -b "..\Bots\MyBotExec" "..\Bots\C#" --clog --pretty --debug
+Battleships.exe -b "..\Bots\MyBot\x64\Release" "..\Bots\C#" --clog --pretty --debug
