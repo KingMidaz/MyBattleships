@@ -32,17 +32,43 @@ rapidjson::Document parse_state(const string working_directory) {
 	return json_doc;
 }
 
-/*int MaxShipLength(rapidjson::Document state)
+string* GetLiveShips(rapidjson::Document& state)
 {
-	if (state["OpponentMap"]["Ships"]["ShipType"].GetString() == "Carrier")
+	const auto& ships = state["OpponentMap"]["Ships"];
+	string* live = new string[5];
+	for (auto it = ships.Begin(); it != ships.End(); it++) {
+		const auto& ship = (*it);
+		if (!ship["Destroyed"].GetBool()) {
+			live->push_back(*ship["ShipType"].GetString());
+		}
+	}
+
+	return live;
+}
+
+bool IsInArray(string* ar, string st)
+{
+	for (int i = 0; i < ar->length(); i++)
+	{
+		if (ar[i].compare(st) == 0)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+int MaxShipLength(string* live)
+{
+	if (IsInArray(live, "Carrier"))
 	{
 		return 5;
 	}
-	else if (state["OpponentMap"]["Ships"]["ShipType"].GetString() == "Battleship")
+	else if (IsInArray(live, "Battleship"))
 	{
 		return 4;
 	}
-	else if (state["OpponentMap"]["Ships"]["ShipType"].GetString() == "Cruiser" || state["OpponentMap"]["Ships"]["ShipType"].GetString() == "Submarine")
+	else if (IsInArray(live, "Submarine") || IsInArray(live, "Cruiser"))
 	{
 		return 3;
 	}
@@ -52,17 +78,17 @@ rapidjson::Document parse_state(const string working_directory) {
 	}
 }
 
-int MinShipLength(rapidjson::Document& state)
+int MinShipLength(string* live)
 {
-	if (state["OpponentMap"]["Ships"]["ShipType"].GetString() == "Destroyer")
+	if (IsInArray(live, "Destroyer"))
 	{
 		return 2;
 	}
-	else if (state["OpponentMap"]["Ships"]["ShipType"].GetString() == "Cruiser" || state["OpponentMap"]["Ships"]["ShipType"].GetString() == "Submarine")
+	else if (IsInArray(live, "Submarine") || IsInArray(live, "Cruiser"))
 	{
 		return 3;
 	}
-	else if (state["OpponentMap"]["Ships"]["ShipType"].GetString() == "Battleship")
+	else if (IsInArray(live, "Battelship"))
 	{
 		return 4;
 	}
@@ -70,8 +96,7 @@ int MinShipLength(rapidjson::Document& state)
 	{
 		return 5;
 	}
-}*/
-
+}
 
 bool IsIn(vector<point> valid_points, point shot)
 {
@@ -85,6 +110,11 @@ bool IsIn(vector<point> valid_points, point shot)
 	return false;
 }
 
+void HitHandler(rapidjson::Document& state, vector<point> hits)
+{
+
+}
+
 void fire_shot(const string working_directory, rapidjson::Document& state) {
 	// Get cells that haven't already been shot at
 	const auto& cells = state["OpponentMap"]["Cells"];
@@ -96,12 +126,34 @@ void fire_shot(const string working_directory, rapidjson::Document& state) {
 			valid_points.push_back(p);
 		}
 	}
+	vector<point> hits;
+	for (auto it = cells.Begin(); it != cells.End(); it++) {
+		const auto& cell = (*it);
+		if (cell["Damaged"].GetBool()) {
+			point h{ cell["X"].GetInt(), cell["Y"].GetInt() };
+			hits.push_back(h);
+		}
+	}
+
+	//HitHandler(state, hits);
 
 	ofstream ofs(working_directory + "/" + command_filename);
 	ofstream debug(working_directory + "/debug.txt");
 
-	//int MaxLength = MaxShipLength(state);
-	int MinLength = 2;
+	debug << "Debug init" << endl;
+
+	string* LiveShips = GetLiveShips(state);
+
+	for (int i = 0; i < LiveShips->length(); i++)
+	{
+		debug << LiveShips[i];
+	}
+	
+	int MaxLength = MaxShipLength(LiveShips);
+	int MinLength = MinShipLength(LiveShips);
+
+	debug << "Max" << MaxLength << endl;
+	debug << "Min" << MinLength << endl;
 
 	for (auto pos = 0; pos < state["MapDimension"].GetInt(); pos++)
 	{
