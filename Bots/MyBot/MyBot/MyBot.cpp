@@ -318,6 +318,11 @@ bool HitHandler(const string working_directory, vector<point> valid_points, vect
 	return false;
 }
 
+bool SpecialHandler(rapidjson::Document& state, string* outstr)
+{
+	return false;
+}
+
 void fire_shot(const string working_directory, rapidjson::Document& state) {
 	
 	ofstream ofs(working_directory + "/" + command_filename);
@@ -367,6 +372,16 @@ void fire_shot(const string working_directory, rapidjson::Document& state) {
 	debug << "Max " << MaxLength << endl;
 	debug << "Min " << MinLength << endl;
 	
+	string outstr;
+	if (SpecialHandler(state, &outstr))
+	{
+		int energy = state["PlayerMap"]["Owner"]["Energy"].GetInt();
+
+		debug << "SpecialHandler true" << endl;
+		ofs << outstr << endl;
+		return;
+	}
+
 	point out;
 	if (HitHandler(working_directory, valid_points, hits, &out, LiveShips, MinLength, MaxLength))
 	{
