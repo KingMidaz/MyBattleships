@@ -72,6 +72,40 @@ ship* GetShipState(rapidjson::Document& state)
 	return live;
 }
 
+ship* GetPlaceShipState(rapidjson::Document& state)
+{
+	int i = 0;
+
+	const auto& ships = state["PlayerMap"]["Owner"]["Ships"];
+	ship* live = new ship[5];
+	for (auto it = ships.Begin(); it != ships.End(); it++) {
+		const auto& ship = (*it);
+		live[i].type = string(ship["ShipType"].GetString());
+		live[i].destroyed = ship["Destroyed"].GetBool();
+
+		if (live[i].type == "Carrier")
+		{
+			live[i].length = 5;
+		}
+		else if (live[i].type == "Battleship")
+		{
+			live[i].length = 4;
+		}
+		else if (live[i].type == "Submarine" || live[i].type == "Cruiser")
+		{
+			live[i].length = 3;
+		}
+		else if (live[i].type == "Destroyer")
+		{
+			live[i].length = 2;
+		}
+
+		i++;
+	}
+
+	return live;
+}
+
 bool IsInArray(string* ar, string st, const string working_directory)
 {
 	ofstream isinar(working_directory + "/isinar.txt", std::ofstream::out | std::ofstream::app);
@@ -108,121 +142,170 @@ bool HitHandler(const string working_directory, vector<point> valid_points, vect
 
 	for (int i = 0; i < hits.size(); i++)
 	{
+		bool adj = false;
+		bool miss1 = false;
+		bool miss2 = false;
+
 		hitdebug << "1" << endl;
 		if (IsIn(hits, { hits[i].x, hits[i].y + 1 }))
 		{
+			miss1 = false;
+			miss2 = false;
+
+			adj = true;
 			hitdebug << "2" << endl;
 			for (int k = 1; k <= max-2; k++)
 			{
 				hitdebug << "3" << endl;
-				if (IsIn(valid_points, { hits[i].x, hits[i].y - k }))
+				if (IsIn(valid_points, { hits[i].x, hits[i].y - k }) && !miss1)
 				{
 					hitdebug << "4" << endl;
 					*out = { hits[i].x, hits[i].y - k };
 					hitdebug << out->x << " " << out->y << endl;
 					return true;
 				}
-				else if (IsIn(valid_points, { hits[i].x, hits[i].y + 1 + k }))
+				else if (!IsIn(hits, { hits[i].x, hits[i].y - k }))
+				{
+					miss1 = true;
+				}
+				if (IsIn(valid_points, { hits[i].x, hits[i].y + 1 + k }) && !miss2)
 				{
 					hitdebug << "5" << endl;
 					*out = { hits[i].x, hits[i].y + 1 + k };
 					hitdebug << out->x << " " << out->y << endl;
 					return true;
 				}
+				else if (!IsIn(hits, { hits[i].x, hits[i].y + 1 + k }))
+				{
+					miss2 = true;
+				}
 			}
 		}
 		if (IsIn(hits, { hits[i].x, hits[i].y - 1 }))
 		{
+			miss1 = false;
+			miss2 = false;
+
+			adj = true;
 			hitdebug << "6" << endl;
 			for (int k = 1; k <= max - 2; k++)
 			{
 				hitdebug << "7" << endl;
-				if (IsIn(valid_points, { hits[i].x, hits[i].y + k }))
+				if (IsIn(valid_points, { hits[i].x, hits[i].y + k }) && !miss1)
 				{
 					hitdebug << "8" << endl;
 					*out = { hits[i].x, hits[i].y + k };
 					hitdebug << out->x << " " << out->y << endl;
 					return true;
 				}
-				else if (IsIn(valid_points, { hits[i].x, hits[i].y - 1 - k }))
+				else if (!IsIn(hits, { hits[i].x, hits[i].y + k }))
+				{
+					miss1 = true;
+				}
+				if (IsIn(valid_points, { hits[i].x, hits[i].y - 1 - k }) && !miss2)
 				{
 					hitdebug << "9" << endl;
 					*out = { hits[i].x, hits[i].y - 1 - k };
 					hitdebug << out->x << " " << out->y << endl;
 					return true;
 				}
+				else if (!IsIn(hits, { hits[i].x, hits[i].y - 1 - k }))
+				{
+					miss2 = true;
+				}
 			}
 		}
 		if (IsIn(hits, { hits[i].x + 1, hits[i].y }))
 		{
+			miss1 = false;
+			miss2 = false;
+
+			adj = true;
 			hitdebug << "10" << endl;
 			for (int k = 1; k <= max - 2; k++)
 			{
 				hitdebug << "11" << endl;
-				if (IsIn(valid_points, { hits[i].x - k, hits[i].y }))
+				if (IsIn(valid_points, { hits[i].x - k, hits[i].y }) && !miss1)
 				{
 					hitdebug << "12" << endl;
 					*out = { hits[i].x - k, hits[i].y };
 					hitdebug << out->x << " " << out->y << endl;
 					return true;
 				}
-				else if (IsIn(valid_points, { hits[i].x + 1 + k, hits[i].y }))
+				else if (!IsIn(hits, { hits[i].x - k, hits[i].y }))
+				{
+					miss1 = true;
+				}
+				if (IsIn(valid_points, { hits[i].x + 1 + k, hits[i].y }) && !miss2)
 				{
 					hitdebug << "13" << endl;
 					*out = { hits[i].x + 1 + k, hits[i].y };
 					hitdebug << out->x << " " << out->y << endl;
 					return true;
 				}
+				else if (!IsIn(hits, { hits[i].x + 1 + k, hits[i].y }))
+				{
+					miss2 = true;
+				}
 			}
 		}
 		if (IsIn(hits, { hits[i].x - 1, hits[i].y }))
 		{
+			miss1 = false;
+			miss2 = false;
+
+			adj = true;
 			hitdebug << "14" << endl;
 			for (int k = 1; k <= max - 2; k++)
 			{
 				hitdebug << "15" << endl;
-				if (IsIn(valid_points, { hits[i].x + k, hits[i].y }))
+				if (IsIn(valid_points, { hits[i].x + k, hits[i].y }) && !miss1)
 				{
 					hitdebug << "16" << endl;
 					*out = { hits[i].x + k, hits[i].y };
 					hitdebug << out->x << " " << out->y << endl;
 					return true;
 				}
-				else if (IsIn(valid_points, { hits[i].x - 1 - k, hits[i].y }))
+				else if (!IsIn(hits, { hits[i].x + k, hits[i].y }))
+				{
+					miss1 = true;
+				}
+				if (IsIn(valid_points, { hits[i].x - 1 - k, hits[i].y }) && !miss2)
 				{
 					hitdebug << "17" << endl;
 					*out = { hits[i].x - 1 - k, hits[i].y };
 					hitdebug << out->x << " " << out->y << endl;
 					return true;
 				}
+				else if (!IsIn(hits, { hits[i].x - 1 - k, hits[i].y }))
+				{
+					miss2 = true;
+				}
 			}
 		}
-	}
-
-	for (int i = 0; i < hits.size(); i++)
-	{
-		if (IsIn(valid_points, { hits[i].x + 1, hits[i].y }))
+		
+		if (IsIn(valid_points, { hits[i].x + 1, hits[i].y }) && !adj)
 		{
 			hitdebug << "18" << endl;
 			*out = { hits[i].x + 1, hits[i].y };
 			hitdebug << out->x << " " << out->y << endl;
 			return true;
 		}
-		if (IsIn(valid_points, { hits[i].x - 1, hits[i].y }))
+		if (IsIn(valid_points, { hits[i].x - 1, hits[i].y }) && !adj)
 		{
 			hitdebug << "19" << endl;
 			*out = { hits[i].x - 1, hits[i].y };
 			hitdebug << out->x << " " << out->y << endl;
 			return true;
 		}
-		if (IsIn(valid_points, { hits[i].x, hits[i].y + 1}))
+		if (IsIn(valid_points, { hits[i].x, hits[i].y + 1}) && !adj)
 		{
 			hitdebug << "20" << endl;
 			*out = { hits[i].x, hits[i].y + 1};
 			hitdebug << out->x << " " << out->y << endl;
 			return true;
 		}
-		if (IsIn(valid_points, { hits[i].x, hits[i].y - 1}))
+		if (IsIn(valid_points, { hits[i].x, hits[i].y - 1}) && !adj)
 		{
 			hitdebug << "21" << endl;
 			*out = { hits[i].x, hits[i].y - 1};
@@ -231,6 +314,7 @@ bool HitHandler(const string working_directory, vector<point> valid_points, vect
 		}
 	}
 
+	hitdebug << "Hitdebug exiting" << endl;
 	return false;
 }
 
@@ -263,6 +347,7 @@ void fire_shot(const string working_directory, rapidjson::Document& state) {
 	
 	ship* LiveShips = GetShipState(state);
 
+	const int BOARD_SIZE = state["MapDimension"].GetInt();
 	int MaxLength = 0;
 	int MinLength = 5;
 
@@ -291,10 +376,10 @@ void fire_shot(const string working_directory, rapidjson::Document& state) {
 		return;
 	}
 
-	for (auto pos = 0; pos < state["MapDimension"].GetInt(); pos++)
+	for (auto pos = 0; pos < BOARD_SIZE; pos++)
 	{
 		point shot1 = { pos, pos };
-		point shot2 = { state["MapDimension"].GetInt() - pos, pos };
+		point shot2 = { BOARD_SIZE - pos, pos };
 
 		if (IsIn(valid_points, shot1))
 		{
@@ -313,13 +398,13 @@ void fire_shot(const string working_directory, rapidjson::Document& state) {
 	int pos = 0;
 	int it = 0;
 
-	while (++it*MinLength < state["MapDimension"].GetInt()*0.5) {
-		for (pos = 0; pos < state["MapDimension"].GetInt(); pos++)
+	while (++it*MinLength < BOARD_SIZE*0.5) {
+		for (pos = 0; pos < BOARD_SIZE; pos++)
 		{
 			point shot1 = { pos + it*MinLength, pos };
 			point shot2 = { pos, pos + it*MinLength };
-			point shot3 = { state["MapDimension"].GetInt() - pos - it*MinLength, pos };
-			point shot4 = { state["MapDimension"].GetInt() - pos, pos + it*MinLength };
+			point shot3 = { BOARD_SIZE - pos - it*MinLength, pos };
+			point shot4 = { BOARD_SIZE - pos, pos + it*MinLength };
 
 			if (IsIn(valid_points, shot1))
 			{
@@ -358,13 +443,76 @@ void fire_shot(const string working_directory, rapidjson::Document& state) {
 }
 
 
-void place_ships(const string working_directory) {
+void place_ships(const string working_directory, const int BOARD_SIZE, rapidjson::Document& state) {
 	ofstream ofs(working_directory + "/" + place_filename);
-	ofs << "Carrier 1 1 East\n";
+	ofstream debugplace(working_directory + "/debugplace.txt");
+
+	debugplace << "Place init" << endl;
+	
+	ship* ships = GetPlaceShipState(state);
+
+	vector<point> occupied;
+
+	for (int i = 0; i < 5; i++)
+	{
+		debugplace << "Loop init " << ships[i].type << endl;
+
+		bool searchforpos = true;
+		
+		int x, y;
+		string dir;
+
+		while (searchforpos)
+		{
+			bool valid = true;
+			
+			x = rand() % BOARD_SIZE;
+			y = rand() % BOARD_SIZE;
+			int k = ships[i].length - 1;
+
+			debugplace << x << " " << y << " " << k << endl;
+
+			switch (rand() % 4)
+			{
+			case 0:
+				dir = "North";
+				debugplace << "N" << endl;
+				for (int v = 0; v < ships[i].length; v++) { if (IsIn(occupied, { x, y + v })) { valid = false; debugplace << "Occupied" << endl;} }
+				if (!(y + k >= 0 && y + k < BOARD_SIZE)) { valid = false; }
+				if (valid) { { for (int v = 0; v < ships[i].length; v++) { occupied.push_back({ x, y + v }); } } }
+				break;
+			case 1:
+				dir = "South";
+				debugplace << "S" << endl;
+				for (int v = 0; v < ships[i].length; v++) { if (IsIn(occupied, { x, y - v })) { valid = false; debugplace << "Occupied" << endl;} }
+				if (!(y - k >= 0 && y - k < BOARD_SIZE)) { valid = false; }
+				if (valid) { { for (int v = 0; v < ships[i].length; v++) { occupied.push_back({ x, y - v }); } } }
+				break;
+			case 2:
+				dir = "East";
+				debugplace << "E" << endl;
+				for (int v = 0; v < ships[i].length; v++) { if (IsIn(occupied, { x + v, y })) { valid = false; debugplace << "Occupied" << endl;} }
+				if (!(x + k >= 0 && x + k < BOARD_SIZE)) { valid = false; }
+				if (valid) { { for (int v = 0; v < ships[i].length; v++) { occupied.push_back({ x + v, y }); } } }
+				break;
+			case 3:
+				dir = "West";
+				debugplace << "W" << endl;
+				for (int v = 0; v < ships[i].length; v++) { if (IsIn(occupied, { x - v, y })) { valid = false; debugplace << "Occupied" << endl;} }
+				if (!(x - k >= 0 && x - k < BOARD_SIZE)) { valid = false; }
+				if (valid) { { for (int v = 0; v < ships[i].length; v++) { occupied.push_back({ x - v, y }); } } }
+				break;
+			}
+			if (valid) { searchforpos = false; }
+		}
+		ofs << ships[i].type << " " << x << " " << y << " " << dir << endl;
+	}
+
+	/*ofs << "Carrier 1 1 East\n";
 	ofs << "Battleship 7 7 South\n";
 	ofs << "Cruiser 9 0 North\n";
 	ofs << "Submarine 4 4 West\n";
-	ofs << "Destroyer 0 9 East\n";
+	ofs << "Destroyer 0 9 East\n";*/
 }
 
 
@@ -378,7 +526,7 @@ int main(int argc, char** argv)
 	auto state = parse_state(working_directory);
 
 	if (state["Phase"].GetInt() == 1) {
-		place_ships(working_directory);
+		place_ships(working_directory, state["MapDimension"].GetInt(), state);
 	}
 	else {
 		fire_shot(working_directory, state);
