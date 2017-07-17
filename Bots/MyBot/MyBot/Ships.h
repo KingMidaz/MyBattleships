@@ -12,10 +12,11 @@
 #include "rapidjson/document.h"
 
 #include "Utility.h"
-#include "Ships.h"
 #include "Structs.h"
 
-class MyBot {
+class Ships {
 
+public:
+	static vector<ship> Ships::GetShipState(rapidjson::Document& state);
+	static vector<ship> GetPlaceShipState(rapidjson::Document& state);
 };
-// TODO: reference additional headers your program requires here

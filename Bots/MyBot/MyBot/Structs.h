@@ -13,9 +13,27 @@
 
 #include "Utility.h"
 #include "Ships.h"
-#include "Structs.h"
 
-class MyBot {
+using namespace std;
 
+class ship {
+
+public:
+	string type;
+	int length;
+	bool destroyed;
 };
-// TODO: reference additional headers your program requires here
+
+class point {
+
+public:
+	int x;
+	int y;
+};
+
+class pointspecialscore {
+
+public:
+	point pt;
+	int score;
+};
