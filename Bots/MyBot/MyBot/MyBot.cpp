@@ -24,6 +24,11 @@ struct ship {
 	bool destroyed;
 };
 
+struct pointspecialscore {
+	point pt;
+	int score;
+};
+
 
 rapidjson::Document parse_state(const string working_directory) {
 	// Long-winded parsing because Nuget version of
@@ -38,17 +43,16 @@ rapidjson::Document parse_state(const string working_directory) {
 	return json_doc;
 }
 
-ship* GetShipState(rapidjson::Document& state)
+vector<ship> GetShipState(rapidjson::Document& state)
 {
 	int i = 0;
 
 	const auto& ships = state["OpponentMap"]["Ships"];
-	ship* live = new ship[5];
+	vector<ship> live;
 	for (auto it = ships.Begin(); it != ships.End(); it++) {
 		const auto& ship = (*it);
-		live[i].type = string(ship["ShipType"].GetString());
-		live[i].destroyed = ship["Destroyed"].GetBool();
-		
+		live.push_back({ string(ship["ShipType"].GetString()), 0, ship["Destroyed"].GetBool() });
+
 		if (live[i].type == "Carrier")
 		{
 			live[i].length = 5;
@@ -72,16 +76,15 @@ ship* GetShipState(rapidjson::Document& state)
 	return live;
 }
 
-ship* GetPlaceShipState(rapidjson::Document& state)
+vector<ship> GetPlaceShipState(rapidjson::Document& state)
 {
 	int i = 0;
 
 	const auto& ships = state["PlayerMap"]["Owner"]["Ships"];
-	ship* live = new ship[5];
+	vector<ship> live;
 	for (auto it = ships.Begin(); it != ships.End(); it++) {
 		const auto& ship = (*it);
-		live[i].type = string(ship["ShipType"].GetString());
-		live[i].destroyed = ship["Destroyed"].GetBool();
+		live.push_back({ string(ship["ShipType"].GetString()), 0, ship["Destroyed"].GetBool()});
 
 		if (live[i].type == "Carrier")
 		{
@@ -135,7 +138,7 @@ bool IsIn(vector<point> vectorar, point shot)
 	return false;
 }
 
-bool HitHandler(const string working_directory, vector<point> valid_points, vector<point> hits, point* out, ship* liveships, int min, int max)
+bool HitHandler(const string working_directory, vector<point> valid_points, vector<point> hits, point* out, vector<ship> liveships, int min, int max)
 {
 	ofstream hitdebug(working_directory + "/hitdebug.txt");
 	hitdebug << "Hitdebug init" << endl;
@@ -318,8 +321,59 @@ bool HitHandler(const string working_directory, vector<point> valid_points, vect
 	return false;
 }
 
-bool SpecialHandler(rapidjson::Document& state, string* outstr)
+bool SpecialHandler(rapidjson::Document& state, string* outstr, int energy, int energyperround, vector<point> valid_points, const string working_directory, vector<ship> live)
 {
+	ofstream specialdebug(working_directory + "/specialdebug.txt");
+	specialdebug << "Special debug init" << endl;
+	vector<pointspecialscore> score;
+	if (energy >= 10*energyperround)
+	{
+		bool living = false;
+		for (int l = 0; l < 5; l++)
+		{
+			if (live[l].type.compare("Submarine") == 0 && !live[l].destroyed)
+			{
+				living = true;
+			}
+		}
+		if (!living)
+		{
+			return false;
+		}
+
+		for (int i = 0; i < valid_points.size(); i++)
+		{
+			score.push_back(pointspecialscore({ { valid_points[i].x, valid_points[i].y }, 0 }));
+			for (int x = 0; x < 5; x++)
+			{
+				for (int y = 0; y < 5; y++)
+				{
+					if (IsIn(valid_points, { valid_points[i].x - 2 + x, valid_points[i].y + 2 + y }))
+					{
+						score[i].score++;
+					}
+				}
+			}
+		}
+
+		pointspecialscore max = pointspecialscore{ {0,0}, 0 };
+		for (int k = 0; k < valid_points.size(); k++)
+		{
+			if (max.score < score[k].score)
+			{
+				max = score[k];
+			}
+		}
+		if (max.score > 0)
+		{	
+			stringstream tmp;
+			tmp << "7, " << max.pt.x << ", " << max.pt.y;
+			specialdebug << tmp.str() << endl;
+			*outstr = tmp.str();
+			return true;
+		}
+	}
+	
 	return false;
 }
 
@@ -350,7 +404,7 @@ void fire_shot(const string working_directory, rapidjson::Document& state) {
 		}
 	}
 	
-	ship* LiveShips = GetShipState(state);
+	vector<ship> LiveShips = GetPlaceShipState(state);
 
 	const int BOARD_SIZE = state["MapDimension"].GetInt();
 	int MaxLength = 0;
@@ -372,15 +426,16 @@ void fire_shot(const string working_directory, rapidjson::Document& state) {
 	debug << "Max " << MaxLength << endl;
 	debug << "Min " << MinLength << endl;
 	
+	/*int energyperround = BOARD_SIZE / 3;
+	int energy = state["PlayerMap"]["Owner"]["Energy"].GetInt();
+	debug << "Energy " << energy << " " << energyperround;
 	string outstr;
-	if (SpecialHandler(state, &outstr))
+	if (energy >= 8*energyperround && SpecialHandler(state, &outstr, energy, energyperround, valid_points, working_directory, LiveShips))
 	{
-		int energy = state["PlayerMap"]["Owner"]["Energy"].GetInt();
-
 		debug << "SpecialHandler true" << endl;
 		ofs << outstr << endl;
 		return;
-	}
+	}*/
 
 	point out;
 	if (HitHandler(working_directory, valid_points, hits, &out, LiveShips, MinLength, MaxLength))
@@ -464,7 +519,7 @@ void place_ships(const string working_directory, const int BOARD_SIZE, rapidjson
 
 	debugplace << "Place init" << endl;
 	
-	ship* ships = GetPlaceShipState(state);
+	auto ships = GetPlaceShipState(state);
 
 	vector<point> occupied;
 
@@ -481,13 +536,19 @@ void place_ships(const string working_directory, const int BOARD_SIZE, rapidjson
 		{
 			bool valid = true;
 			
-			x = rand() % BOARD_SIZE;
-			y = rand() % BOARD_SIZE;
+			random_device rd;
+			default_random_engine rng(rd());
+			uniform_int_distribution<int> randcoord(0, BOARD_SIZE - 1);
+
+			x = randcoord(rng);
+			y = randcoord(rng);
 			int k = ships[i].length - 1;
 
 			debugplace << x << " " << y << " " << k << endl;
 
-			switch (rand() % 4)
+			uniform_int_distribution<int> randorent(0, 3);
+
+			switch (randorent(rng))
 			{
 			case 0:
 				dir = "North";
