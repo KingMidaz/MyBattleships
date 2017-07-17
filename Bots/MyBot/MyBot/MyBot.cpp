@@ -177,7 +177,7 @@ bool SpecialHandler(rapidjson::Document& state, string* outstr, int energy, int 
 		if (max.score > 0)
 		{	
 			stringstream tmp;
-			tmp << "7, " << max.pt.x << ", " << max.pt.y;
+			tmp << "7," << max.pt.x << "," << max.pt.y;
 			specialdebug << tmp.str() << endl;
 			*outstr = tmp.str();
 			return true;
