@@ -8,8 +8,8 @@ constexpr char command_filename[] = "command.txt";
 
 bool HitHandler(const string working_directory, vector<point> valid_points, vector<point> hits, point* out, vector<ship> liveships, int min, int max)
 {
-	ofstream hitdebug(working_directory + "/hitdebug.txt");
-	hitdebug << "Hitdebug init" << endl;
+	//ofstream hitdebug(working_directory + "/hitdebug.txt");
+	//hitdebug << "Hitdebug init" << endl;
 
 	for (int i = 0; i < hits.size(); i++)
 	{
@@ -17,7 +17,7 @@ bool HitHandler(const string working_directory, vector<point> valid_points, vect
 		bool miss1 = false;
 		bool miss2 = false;
 
-		hitdebug << "1" << endl;
+		//hitdebug << "1" << endl;
 		for (int g = 1; g > -2; g -= 2)
 		{
 			if (Utility::IsIn(hits, { hits[i].x, hits[i].y + g }))
@@ -26,15 +26,15 @@ bool HitHandler(const string working_directory, vector<point> valid_points, vect
 				miss2 = false;
 
 				adj = true;
-				hitdebug << "2" << endl;
+				//hitdebug << "2" << endl;
 				for (int k = 1; k <= max - 2; k++)
 				{
-					hitdebug << "3" << endl;
+					//hitdebug << "3" << endl;
 					if (Utility::IsIn(valid_points, { hits[i].x, hits[i].y - k }) && !miss1)
 					{
-						hitdebug << "4" << endl;
+						//hitdebug << "4" << endl;
 						*out = { hits[i].x, hits[i].y - k };
-						hitdebug << out->x << " " << out->y << endl;
+						//hitdebug << out->x << " " << out->y << endl;
 						return true;
 					}
 					else if (!Utility::IsIn(hits, { hits[i].x, hits[i].y - k }))
@@ -43,9 +43,9 @@ bool HitHandler(const string working_directory, vector<point> valid_points, vect
 					}
 					if (Utility::IsIn(valid_points, { hits[i].x, hits[i].y + 1 + k }) && !miss2)
 					{
-						hitdebug << "5" << endl;
+						//hitdebug << "5" << endl;
 						*out = { hits[i].x, hits[i].y + 1 + k };
-						hitdebug << out->x << " " << out->y << endl;
+						//hitdebug << out->x << " " << out->y << endl;
 						return true;
 					}
 					else if (!Utility::IsIn(hits, { hits[i].x, hits[i].y + 1 + k }))
@@ -64,15 +64,15 @@ bool HitHandler(const string working_directory, vector<point> valid_points, vect
 				miss2 = false;
 
 				adj = true;
-				hitdebug << "10" << endl;
+				//hitdebug << "10" << endl;
 				for (int k = 1; k <= max - 2; k++)
 				{
-					hitdebug << "11" << endl;
+					//hitdebug << "11" << endl;
 					if (Utility::IsIn(valid_points, { hits[i].x - k, hits[i].y }) && !miss1)
 					{
-						hitdebug << "12" << endl;
+						//hitdebug << "12" << endl;
 						*out = { hits[i].x - k, hits[i].y };
-						hitdebug << out->x << " " << out->y << endl;
+						//hitdebug << out->x << " " << out->y << endl;
 						return true;
 					}
 					else if (!Utility::IsIn(hits, { hits[i].x - k, hits[i].y }))
@@ -81,9 +81,9 @@ bool HitHandler(const string working_directory, vector<point> valid_points, vect
 					}
 					if (Utility::IsIn(valid_points, { hits[i].x + 1 + k, hits[i].y }) && !miss2)
 					{
-						hitdebug << "13" << endl;
+						//hitdebug << "13" << endl;
 						*out = { hits[i].x + 1 + k, hits[i].y };
-						hitdebug << out->x << " " << out->y << endl;
+						//hitdebug << out->x << " " << out->y << endl;
 						return true;
 					}
 					else if (!Utility::IsIn(hits, { hits[i].x + 1 + k, hits[i].y }))
@@ -106,9 +106,9 @@ bool HitHandler(const string working_directory, vector<point> valid_points, vect
 		{
 			if (Utility::IsIn(valid_points, { hits[i].x + g, hits[i].y }) && !adj)
 			{
-				hitdebug << "18" << endl;
+				//hitdebug << "18" << endl;
 				*out = { hits[i].x + g, hits[i].y };
-				hitdebug << out->x << " " << out->y << endl;
+				//hitdebug << out->x << " " << out->y << endl;
 				return true;
 			}
 		}
@@ -117,15 +117,15 @@ bool HitHandler(const string working_directory, vector<point> valid_points, vect
 		{
 			if (Utility::IsIn(valid_points, { hits[i].x, hits[i].y + g }) && !adj)
 			{
-				hitdebug << "20" << endl;
+				//hitdebug << "20" << endl;
 				*out = { hits[i].x, hits[i].y + g };
-				hitdebug << out->x << " " << out->y << endl;
+				//hitdebug << out->x << " " << out->y << endl;
 				return true;
 			}
 		}
 	}
 
-	hitdebug << "Hitdebug exiting" << endl;
+	//hitdebug << "Hitdebug exiting" << endl;
 	return false;
 }
 
@@ -158,7 +158,7 @@ bool SpecialHandler(rapidjson::Document& state, string* outstr, int energy, int 
 			{
 				for (int y = 0; y < 5; y++)
 				{
-					if (Utility::IsIn(valid_points, { valid_points[i].x - 2 + x, valid_points[i].y + 2 + y }))
+					if (Utility::IsIn(valid_points, { valid_points[i].x - 2 + x, valid_points[i].y - 2 + y }))
 					{
 						score[i].score++;
 					}
@@ -324,7 +324,7 @@ void place_ships(const string working_directory, const int BOARD_SIZE, rapidjson
 	ofstream ofs(working_directory + "/" + place_filename);
 	ofstream debugplace(working_directory + "/debugplace.txt");
 
-	debugplace << "Place init" << endl;
+	//debugplace << "Place init" << endl;
 	
 	auto ships = Ships::GetPlaceShipState(state);
 
@@ -332,7 +332,7 @@ void place_ships(const string working_directory, const int BOARD_SIZE, rapidjson
 
 	for (int i = 0; i < 5; i++)
 	{
-		debugplace << "Loop init " << ships[i].type << endl;
+		//debugplace << "Loop init " << ships[i].type << endl;
 
 		bool searchforpos = true;
 		
@@ -351,7 +351,7 @@ void place_ships(const string working_directory, const int BOARD_SIZE, rapidjson
 			y = randcoord(rng);
 			int k = ships[i].length - 1;
 
-			debugplace << x << " " << y << " " << k << endl;
+			//debugplace << x << " " << y << " " << k << endl;
 
 			uniform_int_distribution<int> randorent(0, 3);
 
@@ -359,29 +359,29 @@ void place_ships(const string working_directory, const int BOARD_SIZE, rapidjson
 			{
 			case 0:
 				dir = "North";
-				debugplace << "N" << endl;
-				for (int v = 0; v < ships[i].length; v++) { if (Utility::IsIn(occupied, { x, y + v })) { valid = false; debugplace << "Occupied" << endl;} }
+				//debugplace << "N" << endl;
+				for (int v = 0; v < ships[i].length; v++) { if (Utility::IsIn(occupied, { x, y + v })) { valid = false; /*debugplace << "Occupied" << endl;*/} }
 				if (!(y + k >= 0 && y + k < BOARD_SIZE)) { valid = false; }
 				if (valid) { { for (int v = 0; v < ships[i].length; v++) { occupied.push_back({ x, y + v }); } } }
 				break;
 			case 1:
 				dir = "South";
-				debugplace << "S" << endl;
-				for (int v = 0; v < ships[i].length; v++) { if (Utility::IsIn(occupied, { x, y - v })) { valid = false; debugplace << "Occupied" << endl;} }
+				//debugplace << "S" << endl;
+				for (int v = 0; v < ships[i].length; v++) { if (Utility::IsIn(occupied, { x, y - v })) { valid = false; /*debugplace << "Occupied" << endl;*/} }
 				if (!(y - k >= 0 && y - k < BOARD_SIZE)) { valid = false; }
 				if (valid) { { for (int v = 0; v < ships[i].length; v++) { occupied.push_back({ x, y - v }); } } }
 				break;
 			case 2:
 				dir = "East";
-				debugplace << "E" << endl;
-				for (int v = 0; v < ships[i].length; v++) { if (Utility::IsIn(occupied, { x + v, y })) { valid = false; debugplace << "Occupied" << endl;} }
+				//debugplace << "E" << endl;
+				for (int v = 0; v < ships[i].length; v++) { if (Utility::IsIn(occupied, { x + v, y })) { valid = false; /*debugplace << "Occupied" << endl;*/} }
 				if (!(x + k >= 0 && x + k < BOARD_SIZE)) { valid = false; }
 				if (valid) { { for (int v = 0; v < ships[i].length; v++) { occupied.push_back({ x + v, y }); } } }
 				break;
 			case 3:
 				dir = "West";
-				debugplace << "W" << endl;
-				for (int v = 0; v < ships[i].length; v++) { if (Utility::IsIn(occupied, { x - v, y })) { valid = false; debugplace << "Occupied" << endl;} }
+				//debugplace << "W" << endl;
+				for (int v = 0; v < ships[i].length; v++) { if (Utility::IsIn(occupied, { x - v, y })) { valid = false; /*debugplace << "Occupied" << endl;*/} }
 				if (!(x - k >= 0 && x - k < BOARD_SIZE)) { valid = false; }
 				if (valid) { { for (int v = 0; v < ships[i].length; v++) { occupied.push_back({ x - v, y }); } } }
 				break;
@@ -402,7 +402,7 @@ void place_ships(const string working_directory, const int BOARD_SIZE, rapidjson
 int main(int argc, char** argv)
 {
 	if (argc != 3) {
-		cout << "Usage: SampleBot.exe PlayerKey WorkingDirectory" << endl;
+		cout << "Usage: MyBot.exe PlayerKey WorkingDirectory" << endl;
 		return 1;
 	}
 	string working_directory(argv[2]);
