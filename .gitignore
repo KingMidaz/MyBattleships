@@ -1,5 +1,7 @@
 Game Engine/Replays/
 
+*.zip/
+
 # Visual Studio 2015 user specific files
 .vs/
 

@@ -4,5 +4,5 @@
 	"NickName": "GoldenBullet",
 	"BotType": "CPlusPlus",
 	"ProjectLocation": "",
-	"RunFile": "MyBot.exe"
+	"RunFile": "x64\\ReleaseMyBot.exe"
 }

@@ -6,7 +6,7 @@ constexpr char state_filename[] = "state.json";
 constexpr char place_filename[] = "place.txt";
 constexpr char command_filename[] = "command.txt";
 
-bool HitHandler(const string working_directory, vector<point> valid_points, vector<point> hits, point* out, vector<ship> liveships, int min, int max)
+bool MyBot::HitHandler(const string working_directory, vector<point> valid_points, vector<point> hits, point* out, vector<ship> liveships, int min, int max)
 {
 	//ofstream hitdebug(working_directory + "/hitdebug.txt");
 	//hitdebug << "Hitdebug init" << endl;
@@ -129,57 +129,67 @@ bool HitHandler(const string working_directory, vector<point> valid_points, vect
 	return false;
 }
 
-bool SpecialHandler(rapidjson::Document& state, string* outstr, int energy, int energyperround, vector<point> valid_points, const string working_directory)
+string MyBot::GetMaxSpecialScorePos(int q, int p, vector<point> valid_points)
+{
+	vector<pointspecialscore> score;
+
+	for (int i = 0; i < valid_points.size(); i++)
+	{
+		score.push_back(pointspecialscore({ { valid_points[i].x, valid_points[i].y }, 0 }));
+		for (int x = 0; x < q; x+=p)
+		{
+			for (int y = 0; y < q; y+=p)
+			{
+				if (Utility::IsIn(valid_points, { valid_points[i].x - 2 + x, valid_points[i].y - 2 + y }))
+				{
+					score[i].score++;
+				}
+			}
+		}
+	}
+
+	pointspecialscore max = pointspecialscore{ { 0,0 }, 0 };
+	for (int k = 0; k < valid_points.size(); k++)
+	{
+		if (max.score < score[k].score)
+		{
+			max = score[k];
+		}
+	}
+	if (max.score > 0)
+	{
+		stringstream tmp;
+		tmp << max.pt.x << "," << max.pt.y;
+		return tmp.str();
+	}
+	
+	return "";
+}
+
+bool MyBot::SpecialHandler(rapidjson::Document& state, string* outstr, int energy, int energyperround, vector<point> valid_points, const string working_directory)
 {
 	vector<ship> live = Ships::GetPlaceShipState(state);
 
 	ofstream specialdebug(working_directory + "/specialdebug.txt");
 	specialdebug << "Special debug init" << endl;
-	vector<pointspecialscore> score;
-	if (energy >= 10*energyperround)
+
+	for (int l = 0; l < 5; l++)
 	{
-		bool living = false;
-		for (int l = 0; l < 5; l++)
+		if (live[l].type.compare("Battleship") == 0 && !live[l].destroyed)
 		{
-			if (live[l].type.compare("Submarine") == 0 && !live[l].destroyed)
+			if (energy >= 12 * energyperround)
 			{
-				living = true;
+				*outstr = "5," + GetMaxSpecialScorePos(3, 2, valid_points);
+				return true;
 			}
-		}
-		if (!living)
-		{
 			return false;
 		}
-
-		for (int i = 0; i < valid_points.size(); i++)
+	}
+	for (int l = 0; l < 5; l++)
+	{
+		if (live[l].type.compare("Submarine") == 0 && !live[l].destroyed && energy >= 10 * energyperround)
 		{
-			score.push_back(pointspecialscore({ { valid_points[i].x, valid_points[i].y }, 0 }));
-			for (int x = 0; x < 5; x++)
-			{
-				for (int y = 0; y < 5; y++)
-				{
-					if (Utility::IsIn(valid_points, { valid_points[i].x - 2 + x, valid_points[i].y - 2 + y }))
-					{
-						score[i].score++;
-					}
-				}
-			}
-		}
-
-		pointspecialscore max = pointspecialscore{ {0,0}, 0 };
-		for (int k = 0; k < valid_points.size(); k++)
-		{
-			if (max.score < score[k].score)
-			{
-				max = score[k];
-			}
-		}
-		if (max.score > 0)
-		{	
-			stringstream tmp;
-			tmp << "7," << max.pt.x << "," << max.pt.y;
-			specialdebug << tmp.str() << endl;
-			*outstr = tmp.str();
+			*outstr = "7," + GetMaxSpecialScorePos(5, 1, valid_points);
 			return true;
 		}
 	}
@@ -187,7 +197,8 @@ bool SpecialHandler(rapidjson::Document& state, string* outstr, int energy, int 
 	return false;
 }
 
-void fire_shot(const string working_directory, rapidjson::Document& state) {
+void MyBot::fire_shot(const string working_directory, rapidjson::Document& state) 
+{
 	
 	ofstream ofs(working_directory + "/" + command_filename);
 	ofstream debug(working_directory + "/debug.txt");
@@ -320,7 +331,8 @@ void fire_shot(const string working_directory, rapidjson::Document& state) {
 	ofs << "1," << shot.x << "," << shot.y << "\n";
 }
 
-void place_ships(const string working_directory, const int BOARD_SIZE, rapidjson::Document& state) {
+void MyBot::place_ships(const string working_directory, const int BOARD_SIZE, rapidjson::Document& state) 
+{
 	ofstream ofs(working_directory + "/" + place_filename);
 	ofstream debugplace(working_directory + "/debugplace.txt");
 
@@ -409,10 +421,10 @@ int main(int argc, char** argv)
 	auto state = Utility::parse_state(working_directory, state_filename);
 
 	if (state["Phase"].GetInt() == 1) {
-		place_ships(working_directory, state["MapDimension"].GetInt(), state);
+		MyBot::place_ships(working_directory, state["MapDimension"].GetInt(), state);
 	}
 	else {
-		fire_shot(working_directory, state);
+		MyBot::fire_shot(working_directory, state);
 	}
 
 	return 0;
