@@ -1,8 +1,8 @@
 {
 	"Author": "David Scragg",
 	"Email": "dscragg@live.com",
-	"NickName": "TheKiller",
+	"NickName": "GoldenBullet",
 	"BotType": "CPlusPlus",
 	"ProjectLocation": "",
-	"RunFile": "Release\\TheKiller.exe"
+	"RunFile": "x64\\Release\\TheKiller.exe"
 }

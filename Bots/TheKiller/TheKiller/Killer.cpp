@@ -379,6 +379,13 @@ void Killer::place_ships(const string working_directory, const int BOARD_SIZE, r
 
 	vector<point> occupied;
 
+	for (int x = BOARD_SIZE * 4 / 10; x < BOARD_SIZE * 6 / 10; x++)
+	{
+		for (int y = BOARD_SIZE * 4 / 10; y < BOARD_SIZE * 6 / 10; y++)
+		{
+			occupied.push_back({ x, y });
+		}
+	}
 	for (int i = 0; i < 5; i++)
 	{
 		//debugplace << "Loop init " << ships[i].type << endl;

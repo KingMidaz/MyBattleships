@@ -4,18 +4,18 @@ using namespace std;
 
 bool Utility::IsInArray(string* ar, string st, const string working_directory)
 {
-	ofstream isinar(working_directory + "/isinar.txt", std::ofstream::out | std::ofstream::app);
+	//ofstream isinar(working_directory + "/isinar.txt", std::ofstream::out | std::ofstream::app);
 
 	for (int i = 0; i < ar->length() - 1; i++)
 	{
-		isinar << st << " " << i << " " << ar[i].compare(st) << endl;
-
+		//isinar << st << " " << i << " " << ar[i].compare(st) << endl;
+		
 		if (ar[i].compare(st) == 0)
 		{
 			return true;
 		}
 	}
-	isinar << st << " false" << endl;
+	//isinar << st << " false" << endl;
 	return false;
 }
 

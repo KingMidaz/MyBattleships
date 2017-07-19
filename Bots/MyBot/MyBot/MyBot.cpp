@@ -170,8 +170,8 @@ bool MyBot::SpecialHandler(rapidjson::Document& state, string* outstr, int energ
 {
 	vector<ship> live = Ships::GetPlaceShipState(state);
 
-	ofstream specialdebug(working_directory + "/specialdebug.txt");
-	specialdebug << "Special debug init" << endl;
+	//ofstream specialdebug(working_directory + "/specialdebug.txt");
+	//specialdebug << "Special debug init" << endl;
 
 	for (int l = 0; l < 5; l++)
 	{
@@ -241,9 +241,9 @@ void MyBot::fire_shot(const string working_directory, rapidjson::Document& state
 {
 	
 	ofstream ofs(working_directory + "/" + command_filename);
-	ofstream debug(working_directory + "/debug.txt");
+	//ofstream debug(working_directory + "/debug.txt");
 	
-	debug << "Debug init" << endl;
+	//debug << "Debug init" << endl;
 	
 	const auto& cells = state["OpponentMap"]["Cells"];
 	vector<point> valid_points;
@@ -259,7 +259,7 @@ void MyBot::fire_shot(const string working_directory, rapidjson::Document& state
 		const auto& cell = (*it);
 		if (cell["Damaged"].GetBool()) {
 			point h{ cell["X"].GetInt(), cell["Y"].GetInt() };
-			debug << h.x << " " << h.y << endl;
+			//debug << h.x << " " << h.y << endl;
 			hits.push_back(h);
 		}
 	}
@@ -280,28 +280,28 @@ void MyBot::fire_shot(const string working_directory, rapidjson::Document& state
 		{
 			MinLength = LiveEnemyShips[i].length;
 		}
-		if (!LiveEnemyShips[i].destroyed) { debug << LiveEnemyShips[i].type << endl; }
+		//if (!LiveEnemyShips[i].destroyed) { debug << LiveEnemyShips[i].type << endl; }
 	}
 	
-	debug << "Max " << MaxLength << endl;
-	debug << "Min " << MinLength << endl;
+	//debug << "Max " << MaxLength << endl;
+	//debug << "Min " << MinLength << endl;
 	
 	point out;
 	if (HitHandler(working_directory, valid_points, hits, &out, LiveEnemyShips, MinLength, MaxLength))
 	{
-		debug << "Hithandler true" << endl;
-		debug << "Out true" << out.x << " " << out.y << endl;
+		//debug << "Hithandler true" << endl;
+		//debug << "Out true" << out.x << " " << out.y << endl;
 		ofs << "1," << out.x << "," << out.y << "\n";
 		return;
 	
 	}
 	int energyperround = BOARD_SIZE / 3;
 	int energy = state["PlayerMap"]["Owner"]["Energy"].GetInt();
-	debug << "Energy " << energy << " " << energyperround;
+	//debug << "Energy " << energy << " " << energyperround;
 	string outstr;
 	if (energy >= 8*energyperround && SpecialHandler(state, &outstr, energy, energyperround, valid_points, working_directory))
 	{
-		debug << "SpecialHandler true" << endl;
+		//debug << "SpecialHandler true" << endl;
 		ofs << outstr << endl;
 		return;
 	}
@@ -314,13 +314,13 @@ void MyBot::fire_shot(const string working_directory, rapidjson::Document& state
 		if (Utility::IsIn(valid_points, shot1))
 		{
 			ofs << "1," << shot1.x << "," << shot1.y << "\n";
-			debug << "Route1\n";
+			//debug << "Route1\n";
 			return;
 		}
 		else if (Utility::IsIn(valid_points, shot2))
 		{
 			ofs << "1," << shot2.x << "," << shot2.y << "\n";
-			debug << "Route2\n";
+			//debug << "Route2\n";
 			return;
 		}
 	}
@@ -339,25 +339,25 @@ void MyBot::fire_shot(const string working_directory, rapidjson::Document& state
 			if (Utility::IsIn(valid_points, shot1))
 			{
 				ofs << "1," << shot1.x << "," << shot1.y << "\n";
-				debug << "Route3\n";
+				//debug << "Route3\n";
 				return;
 			}
 			else if (Utility::IsIn(valid_points, shot2))
 			{
 				ofs << "1," << shot2.x << "," << shot2.y << "\n";
-				debug << "Route4\n";
+				//debug << "Route4\n";
 				return;
 			}
 			else if (Utility::IsIn(valid_points, shot3))
 			{
 				ofs << "1," << shot3.x << "," << shot3.y << "\n";
-				debug << "Route5\n";
+				//debug << "Route5\n";
 				return;
 			}
 			else if (Utility::IsIn(valid_points, shot4))
 			{
 				ofs << "1," << shot4.x << "," << shot4.y << "\n";
-				debug << "Route6\n";
+				//debug << "Route6\n";
 				return;
 			}
 		}
@@ -367,7 +367,7 @@ void MyBot::fire_shot(const string working_directory, rapidjson::Document& state
 	default_random_engine rng(rd());
 	uniform_int_distribution<int> cell_dist(0, valid_points.size() - 1);
 	auto shot = valid_points[cell_dist(rng)];
-	debug << "Random shot taken" << endl;
+	//debug << "Random shot taken" << endl;
 	ofs << "1," << shot.x << "," << shot.y << "\n";
 }
 
