@@ -27,14 +27,16 @@ public:
 	int y;
 };
 
-struct pair_hash {
-	template <class T1, class T2>
-	std::size_t operator () (const std::pair<T1, T2> &p) const {
-		auto h1 = std::hash<T1>{}(p.first);
-		auto h2 = std::hash<T2>{}(p.second);
-
-		return h1 ^ h2;
+struct Hash {
+	std::size_t operator () (const point &p) const {
+		string temp = to_string(p.x) + to_string(p.y);
+		return hash<string>()(temp);
 	}
+};
+
+inline bool operator == (point const& lhs, point const& rhs){
+		return (lhs.x == rhs.x) &&
+			(lhs.y == rhs.y);
 };
 
 class pointspecialscore {

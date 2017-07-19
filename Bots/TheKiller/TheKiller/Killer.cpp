@@ -211,9 +211,9 @@ void Killer::fire_shot(const string working_directory, rapidjson::Document& stat
 {
 
 	ofstream ofs(working_directory + "/" + command_filename);
-	ofstream debug(working_directory + "/debug.txt");
+	//ofstream debug(working_directory + "/debug.txt");
 
-	debug << "Debug init" << endl;
+	//debug << "Debug init" << endl;
 
 	const auto& cells = state["OpponentMap"]["Cells"];
 	vector<point> valid_points;
@@ -229,7 +229,7 @@ void Killer::fire_shot(const string working_directory, rapidjson::Document& stat
 		const auto& cell = (*it);
 		if (cell["Damaged"].GetBool()) {
 			point h{ cell["X"].GetInt(), cell["Y"].GetInt() };
-			debug << h.x << " " << h.y << endl;
+			//debug << h.x << " " << h.y << endl;
 			hits.push_back(h);
 		}
 	}
@@ -250,17 +250,17 @@ void Killer::fire_shot(const string working_directory, rapidjson::Document& stat
 		{
 			MinLength = EnemyShips[i].length;
 		}
-		if (!EnemyShips[i].destroyed) { debug << EnemyShips[i].type << endl; }
+		//if (!EnemyShips[i].destroyed) { debug << EnemyShips[i].type << endl; }
 	}
 
-	debug << "Max " << MaxLength << endl;
-	debug << "Min " << MinLength << endl;
+	//debug << "Max " << MaxLength << endl;
+	//debug << "Min " << MinLength << endl;
 
 	point out;
 	if (HitHandler(working_directory, valid_points, hits, &out, EnemyShips, MinLength, MaxLength))
 	{
-		debug << "Hithandler true" << endl;
-		debug << "Out true" << out.x << " " << out.y << endl;
+		//debug << "Hithandler true" << endl;
+		//debug << "Out true" << out.x << " " << out.y << endl;
 		ofs << "1," << out.x << "," << out.y << "\n";
 		return;
 
@@ -268,24 +268,24 @@ void Killer::fire_shot(const string working_directory, rapidjson::Document& stat
 	
 	vector<pointprobability> pdf;
 	//set<ship> sh(EnemyShips.begin(), EnemyShips.end());
-	unordered_set<point, pair_hash> vp(valid_points.begin(), valid_points.end());
+	unordered_set<point, Hash> vp(valid_points.begin(), valid_points.end());
 	for (auto v : vp)
 	{
 		pdf.push_back(Utility::probability_score(working_directory, BOARD_SIZE, v, vp, EnemyShips));
-		debug << v.x << " " << v.y << endl;
+		//debug << v.x << " " << v.y << endl;
 	}
 
 	int maxprob = 0;
 	for (auto q : pdf)
 	{
-		debug << maxprob << " " << q.score << endl;
+		//debug << maxprob << " " << q.score << endl;
 		if (q.score > maxprob) { maxprob = q.score; }
 	}
 
 	vector<pointprobability> maxar;
 	for (auto q : pdf)
 	{
-		if (q.score == maxprob) { maxar.push_back(q); debug << q.score << " " << q.pt.x << " " << q.pt.y << endl; }
+		if (q.score == maxprob) { maxar.push_back(q); /*debug << q.score << " " << q.pt.x << " " << q.pt.y << endl;*/ }
 	}
 
 	pointprobability pick;
@@ -349,16 +349,16 @@ void Killer::fire_shot(const string working_directory, rapidjson::Document& stat
 	default_random_engine rng(rd());
 	uniform_int_distribution<int> cell_dist(0, maxar.size() - 1);
 	pick = maxar[cell_dist(rng)];
-	debug << "Random shot taken" << endl;
+	//debug << "Random shot taken" << endl;
 label:
 
 	int energyperround = BOARD_SIZE / 3;
 	int energy = state["PlayerMap"]["Owner"]["Energy"].GetInt();
-	debug << "Energy " << energy << " " << energyperround;
+	//debug << "Energy " << energy << " " << energyperround;
 	string outstr;
 	if (energy >= 8 * energyperround && SpecialHandler(state, &outstr, energy, energyperround, pick, working_directory))
 	{
-		debug << "SpecialHandler true" << endl;
+		//debug << "SpecialHandler true" << endl;
 		ofs << outstr << endl;
 		return;
 	}
@@ -371,7 +371,7 @@ label:
 void Killer::place_ships(const string working_directory, const int BOARD_SIZE, rapidjson::Document& state)
 {
 	ofstream ofs(working_directory + "/" + place_filename);
-	ofstream debugplace(working_directory + "/debugplace.txt");
+	//ofstream debugplace(working_directory + "/debugplace.txt");
 
 	//debugplace << "Place init" << endl;
 

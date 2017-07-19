@@ -45,9 +45,9 @@ rapidjson::Document Utility::parse_state(const string working_directory, const s
 	return json_doc;
 }
 
-int Utility::valid_placement(const string working_directory, const int BOARD_SIZE, ship ship, int i, point place, unordered_set<point, pair_hash> validpos)
+int Utility::valid_placement(const string working_directory, const int BOARD_SIZE, ship ship, int i, point place, unordered_set<point, Hash> validpos)
 {
-	ofstream prob(working_directory + "/prob.txt", std::ofstream::out | std::ofstream::app);
+	//ofstream prob(working_directory + "/prob.txt", std::ofstream::out | std::ofstream::app);
 
 	int score = 2;
 	int k = ship.length - 1;
@@ -61,29 +61,29 @@ int Utility::valid_placement(const string working_directory, const int BOARD_SIZ
 	{
 		if ((validpos.find({ x, y + i + v }) == validpos.end())) 
 		{ 
-			prob << x << " " << y+i+v << " Invalid "  << validpos.find({ x, y + i + v })->y << endl;
+			//prob << x << " " << y+i+v << " Invalid "  << validpos.find({ x, y + i + v })->y << endl;
 			score--; 
 			break; 
 		}
-		else { prob << x << " " << y+v+i << "Valid" << validpos.find({ x, y + i + v })->y << endl; }
+		//else { prob << x << " " << y+v+i << "Valid" << validpos.find({ x, y + i + v })->y << endl; }
 	}
 	for (int v = 0; v < ship.length; v++) 
 	{
 		if ((validpos.find({ x + i + v, y }) == validpos.end())) 
 		{ 
-			prob << x+v+i << " " << y << "Invalid" << validpos.find({ x + i + v, y })->y << endl;
+			//prob << x+v+i << " " << y << "Invalid" << validpos.find({ x + i + v, y })->y << endl;
 			score--; 
 			break; 
 		}
-		else { prob << x+i+v << " " << y << "Valid" << validpos.find({ x + i + v, y })->y << endl; }
+		//else { prob << x+i+v << " " << y << "Valid" << validpos.find({ x + i + v, y })->y << endl; }
 	}
 
 	return score;
 }
 
-pointprobability Utility::probability_score(const string working_directory, const int BOARD_SIZE, point place, unordered_set<point, pair_hash> validpos, vector<ship> ship)
+pointprobability Utility::probability_score(const string working_directory, const int BOARD_SIZE, point place, unordered_set<point, Hash> validpos, vector<ship> ship)
 {
-	ofstream prob(working_directory + "/prob.txt", std::ofstream::out | std::ofstream::app);
+	//ofstream prob(working_directory + "/prob.txt", std::ofstream::out | std::ofstream::app);
 
 	int score = 0;
 
@@ -91,12 +91,12 @@ pointprobability Utility::probability_score(const string working_directory, cons
 	{
 		for (int i = 1 - k.length; i < 1; i++)
 		{
-			prob << k.length << "Ship" << endl;
+			//prob << k.length << "Ship" << endl;
 			score += valid_placement(working_directory, BOARD_SIZE, k, i, { place.x, place.y }, validpos);
 		}
 	}
 
-	prob << place.x << " " << place.y << " " << score << endl;
+	//prob << place.x << " " << place.y << " " << score << endl;
 
 	return {place, score};
 }
