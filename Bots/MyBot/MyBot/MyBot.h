@@ -18,7 +18,7 @@
 class MyBot {
 public:
 	static bool HitHandler(const string working_directory, vector<point> valid_points, vector<point> hits, point* out, vector<ship> liveships, int min, int max);
-	static string GetMaxSpecialScorePos(int q, int p, vector<point> valid_points);
+	static string GetMaxSpecialScorePos(int q, int p, int u, int v, vector<point> valid_points);
 	static bool SpecialHandler(rapidjson::Document& state, string* outstr, int energy, int energyperround, vector<point> valid_points, const string working_directory);
 	static void fire_shot(const string working_directory, rapidjson::Document& state);
 	static void MyBot::place_ships(const string working_directory, const int BOARD_SIZE, rapidjson::Document& state);

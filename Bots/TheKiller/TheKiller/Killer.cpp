@@ -1,4 +1,4 @@
-#include "MyBot.h"
+#include "Killer.h"
 
 using namespace std;
 
@@ -6,7 +6,7 @@ constexpr char state_filename[] = "state.json";
 constexpr char place_filename[] = "place.txt";
 constexpr char command_filename[] = "command.txt";
 
-bool MyBot::HitHandler(const string working_directory, vector<point> valid_points, vector<point> hits, point* out, vector<ship> liveships, int min, int max)
+bool Killer::HitHandler(const string working_directory, vector<point> valid_points, vector<point> hits, point* out, vector<ship> liveships, int min, int max)
 {
 	//ofstream hitdebug(working_directory + "/hitdebug.txt");
 	//hitdebug << "Hitdebug init" << endl;
@@ -55,7 +55,7 @@ bool MyBot::HitHandler(const string working_directory, vector<point> valid_point
 				}
 			}
 		}
-		
+
 		for (int g = 1; g > -2; g -= 2)
 		{
 			if (Utility::IsIn(hits, { hits[i].x + g, hits[i].y }))
@@ -96,7 +96,7 @@ bool MyBot::HitHandler(const string working_directory, vector<point> valid_point
 
 		for (int f = 0; f < 3; f += 2)
 		{
-			if (Utility::IsIn(valid_points, { hits[i].x - 1 + f, hits[i].y - 1}) || Utility::IsIn(valid_points, { hits[i].x - 1 + f, hits[i].y + 1}))
+			if (Utility::IsIn(valid_points, { hits[i].x - 1 + f, hits[i].y - 1 }) || Utility::IsIn(valid_points, { hits[i].x - 1 + f, hits[i].y + 1 }))
 			{
 				adj = false;
 			}
@@ -129,49 +129,14 @@ bool MyBot::HitHandler(const string working_directory, vector<point> valid_point
 	return false;
 }
 
-string MyBot::GetMaxSpecialScorePos(int q, int p, int u, int v, vector<point> valid_points)
-{
-	vector<pointspecialscore> score;
-
-	for (int i = 0; i < valid_points.size(); i++)
-	{
-		score.push_back(pointspecialscore({ { valid_points[i].x, valid_points[i].y }, 0 }));
-		for (int x = u; x < q; x+=p)
-		{
-			for (int y = v; y < q; y+=p)
-			{
-				if (Utility::IsIn(valid_points, { valid_points[i].x - 2 + x, valid_points[i].y - 2 + y }))
-				{
-					score[i].score++;
-				}
-			}
-		}
-	}
-
-	pointspecialscore max = pointspecialscore{ { 0,0 }, 0 };
-	for (int k = 0; k < valid_points.size(); k++)
-	{
-		if (max.score < score[k].score)
-		{
-			max = score[k];
-		}
-	}
-	if (max.score > 0)
-	{
-		stringstream tmp;
-		tmp << max.pt.x << "," << max.pt.y;
-		return tmp.str();
-	}
-	
-	return "";
-}
-
-bool MyBot::SpecialHandler(rapidjson::Document& state, string* outstr, int energy, int energyperround, vector<point> valid_points, const string working_directory)
+bool Killer::SpecialHandler(rapidjson::Document& state, string* outstr, int energy, int energyperround, pointprobability maxprob, const string working_directory)
 {
 	vector<ship> live = Ships::GetPlaceShipState(state);
 
 	ofstream specialdebug(working_directory + "/specialdebug.txt");
 	specialdebug << "Special debug init" << endl;
+
+	stringstream ss;
 
 	for (int l = 0; l < 5; l++)
 	{
@@ -179,7 +144,8 @@ bool MyBot::SpecialHandler(rapidjson::Document& state, string* outstr, int energ
 		{
 			if (energy >= 12 * energyperround)
 			{
-				*outstr = "5," + GetMaxSpecialScorePos(3, 2, 0, 0, valid_points);
+				ss << "5," << maxprob.pt.x << "," << maxprob.pt.y << endl;
+				*outstr = ss.str();
 				return true;
 			}
 			return false;
@@ -191,7 +157,8 @@ bool MyBot::SpecialHandler(rapidjson::Document& state, string* outstr, int energ
 		{
 			if (energy >= 10 * energyperround)
 			{
-				*outstr = "7," + GetMaxSpecialScorePos(5, 1, 0, 0, valid_points);
+				ss << "7," << maxprob.pt.x << "," << maxprob.pt.y << endl;
+				*outstr = ss.str();
 				return true;
 			}
 			return false;
@@ -203,7 +170,8 @@ bool MyBot::SpecialHandler(rapidjson::Document& state, string* outstr, int energ
 		{
 			if (energy >= 14 * energyperround)
 			{
-				*outstr = "6," + GetMaxSpecialScorePos(3, 1, 0, 0, valid_points);
+				ss << "6," << maxprob.pt.x << "," << maxprob.pt.y << endl;
+				*outstr = ss.str();
 				return true;
 			}
 			return false;
@@ -215,7 +183,8 @@ bool MyBot::SpecialHandler(rapidjson::Document& state, string* outstr, int energ
 		{
 			if (energy >= 10 * energyperround)
 			{
-				*outstr = "4," + GetMaxSpecialScorePos(3, 2, 0, 0, valid_points);
+				ss << "4," << maxprob.pt.x << "," << maxprob.pt.y << endl;
+				*outstr = ss.str();
 				return true;
 			}
 			return false;
@@ -227,24 +196,25 @@ bool MyBot::SpecialHandler(rapidjson::Document& state, string* outstr, int energ
 		{
 			if (energy >= 8 * energyperround)
 			{
-				*outstr = "3," + GetMaxSpecialScorePos(4, 2, 2, 1, valid_points);
+				ss << "3," << maxprob.pt.x << "," << maxprob.pt.y << endl;
+				*outstr = ss.str();
 				return true;
 			}
 			return false;
 		}
 	}
-	
+
 	return false;
 }
 
-void MyBot::fire_shot(const string working_directory, rapidjson::Document& state) 
+void Killer::fire_shot(const string working_directory, rapidjson::Document& state)
 {
-	
+
 	ofstream ofs(working_directory + "/" + command_filename);
 	ofstream debug(working_directory + "/debug.txt");
-	
+
 	debug << "Debug init" << endl;
-	
+
 	const auto& cells = state["OpponentMap"]["Cells"];
 	vector<point> valid_points;
 	for (auto it = cells.Begin(); it != cells.End(); it++) {
@@ -263,8 +233,8 @@ void MyBot::fire_shot(const string working_directory, rapidjson::Document& state
 			hits.push_back(h);
 		}
 	}
-	
-	vector<ship> LiveEnemyShips = Ships::GetShipState(state);
+
+	vector<ship> EnemyShips = Ships::GetShipState(state);
 
 	const int BOARD_SIZE = state["MapDimension"].GetInt();
 	int MaxLength = 0;
@@ -272,112 +242,139 @@ void MyBot::fire_shot(const string working_directory, rapidjson::Document& state
 
 	for (int i = 0; i < 5; i++)
 	{
-		if (MaxLength < LiveEnemyShips[i].length && !LiveEnemyShips[i].destroyed)
+		if (MaxLength < EnemyShips[i].length && !EnemyShips[i].destroyed)
 		{
-			MaxLength = LiveEnemyShips[i].length;
+			MaxLength = EnemyShips[i].length;
 		}
-		if (MinLength > LiveEnemyShips[i].length && !LiveEnemyShips[i].destroyed)
+		if (MinLength > EnemyShips[i].length && !EnemyShips[i].destroyed)
 		{
-			MinLength = LiveEnemyShips[i].length;
+			MinLength = EnemyShips[i].length;
 		}
-		if (!LiveEnemyShips[i].destroyed) { debug << LiveEnemyShips[i].type << endl; }
+		if (!EnemyShips[i].destroyed) { debug << EnemyShips[i].type << endl; }
 	}
-	
+
 	debug << "Max " << MaxLength << endl;
 	debug << "Min " << MinLength << endl;
-	
+
 	point out;
-	if (HitHandler(working_directory, valid_points, hits, &out, LiveEnemyShips, MinLength, MaxLength))
+	if (HitHandler(working_directory, valid_points, hits, &out, EnemyShips, MinLength, MaxLength))
 	{
 		debug << "Hithandler true" << endl;
 		debug << "Out true" << out.x << " " << out.y << endl;
 		ofs << "1," << out.x << "," << out.y << "\n";
 		return;
+
+	}
 	
-	}
-	int energyperround = BOARD_SIZE / 3;
-	int energy = state["PlayerMap"]["Owner"]["Energy"].GetInt();
-	debug << "Energy " << energy << " " << energyperround;
-	string outstr;
-	if (energy >= 8*energyperround && SpecialHandler(state, &outstr, energy, energyperround, valid_points, working_directory))
+	vector<pointprobability> pdf;
+	//set<ship> sh(EnemyShips.begin(), EnemyShips.end());
+	unordered_set<point, pair_hash> vp(valid_points.begin(), valid_points.end());
+	for (auto v : vp)
 	{
-		debug << "SpecialHandler true" << endl;
-		ofs << outstr << endl;
-		return;
+		pdf.push_back(Utility::probability_score(working_directory, BOARD_SIZE, v, vp, EnemyShips));
+		debug << v.x << " " << v.y << endl;
 	}
 
-	for (auto pos = 0; pos < BOARD_SIZE; pos++)
+	int maxprob = 0;
+	for (auto q : pdf)
 	{
-		point shot1 = { pos, pos };
-		point shot2 = { BOARD_SIZE - pos, pos };
-
-		if (Utility::IsIn(valid_points, shot1))
-		{
-			ofs << "1," << shot1.x << "," << shot1.y << "\n";
-			debug << "Route1\n";
-			return;
-		}
-		else if (Utility::IsIn(valid_points, shot2))
-		{
-			ofs << "1," << shot2.x << "," << shot2.y << "\n";
-			debug << "Route2\n";
-			return;
-		}
+		debug << maxprob << " " << q.score << endl;
+		if (q.score > maxprob) { maxprob = q.score; }
 	}
 
-	int pos = 0;
-	int it = 0;
+	vector<pointprobability> maxar;
+	for (auto q : pdf)
+	{
+		if (q.score == maxprob) { maxar.push_back(q); debug << q.score << " " << q.pt.x << " " << q.pt.y << endl; }
+	}
 
-	while (++it*MinLength <= BOARD_SIZE*0.5) {
-		for (pos = 0; pos < BOARD_SIZE; pos++)
+	pointprobability pick;
+
+	for (auto j : maxar)
+	{
+		for (auto pos = 0; pos < BOARD_SIZE; pos++)
 		{
-			point shot1 = { pos + it*MinLength, pos };
-			point shot2 = { pos, pos + it*MinLength };
-			point shot3 = { BOARD_SIZE - pos - it*MinLength, pos };
-			point shot4 = { BOARD_SIZE - pos, pos + it*MinLength };
+			point shot1 = { pos, pos };
+			point shot2 = { BOARD_SIZE - pos, pos };
 
-			if (Utility::IsIn(valid_points, shot1))
+			if (j.pt.x == shot1.x && j.pt.y == shot1.y)
 			{
-				ofs << "1," << shot1.x << "," << shot1.y << "\n";
-				debug << "Route3\n";
-				return;
+				pick = j;
+				goto label;
 			}
-			else if (Utility::IsIn(valid_points, shot2))
+			else if (j.pt.x == shot2.x && j.pt.y == shot2.y)
 			{
-				ofs << "1," << shot2.x << "," << shot2.y << "\n";
-				debug << "Route4\n";
-				return;
+				pick = j;
+				goto label;
 			}
-			else if (Utility::IsIn(valid_points, shot3))
+		}
+
+		int pos = 0;
+		int it = 0;
+
+		while (++it*MinLength <= BOARD_SIZE*0.5)
+		{
+			for (pos = 0; pos < BOARD_SIZE; pos++)
 			{
-				ofs << "1," << shot3.x << "," << shot3.y << "\n";
-				debug << "Route5\n";
-				return;
-			}
-			else if (Utility::IsIn(valid_points, shot4))
-			{
-				ofs << "1," << shot4.x << "," << shot4.y << "\n";
-				debug << "Route6\n";
-				return;
+				point shot1 = { pos + it*MinLength, pos };
+				point shot2 = { pos, pos + it*MinLength };
+				point shot3 = { BOARD_SIZE - pos - it*MinLength, pos };
+				point shot4 = { BOARD_SIZE - pos, pos + it*MinLength };
+
+				if (j.pt.x == shot1.x && j.pt.y == shot1.y)
+				{
+					pick = j;
+					goto label;
+				}
+				else if (j.pt.x == shot2.x && j.pt.y == shot2.y)
+				{
+					pick = j;
+					goto label;
+				}
+				else if (j.pt.x == shot3.x && j.pt.y == shot3.y)
+				{
+					pick = j;
+					goto label;
+				}
+				else if (j.pt.x == shot4.x && j.pt.y == shot4.y)
+				{
+					pick = j;
+					goto label;
+				}
 			}
 		}
 	}
 
 	random_device rd;
 	default_random_engine rng(rd());
-	uniform_int_distribution<int> cell_dist(0, valid_points.size() - 1);
-	auto shot = valid_points[cell_dist(rng)];
+	uniform_int_distribution<int> cell_dist(0, maxar.size() - 1);
+	pick = maxar[cell_dist(rng)];
 	debug << "Random shot taken" << endl;
-	ofs << "1," << shot.x << "," << shot.y << "\n";
+label:
+
+	int energyperround = BOARD_SIZE / 3;
+	int energy = state["PlayerMap"]["Owner"]["Energy"].GetInt();
+	debug << "Energy " << energy << " " << energyperround;
+	string outstr;
+	if (energy >= 8 * energyperround && SpecialHandler(state, &outstr, energy, energyperround, pick, working_directory))
+	{
+		debug << "SpecialHandler true" << endl;
+		ofs << outstr << endl;
+		return;
+	}
+
+	ofs << "1," << pick.pt.x << "," << pick.pt.y << endl;
+	return;
+
 }
 
-void MyBot::place_ships(const string working_directory, const int BOARD_SIZE, rapidjson::Document& state) 
+void Killer::place_ships(const string working_directory, const int BOARD_SIZE, rapidjson::Document& state)
 {
 	ofstream ofs(working_directory + "/" + place_filename);
 	ofstream debugplace(working_directory + "/debugplace.txt");
 
 	//debugplace << "Place init" << endl;
-	
+
 	auto ships = Ships::GetPlaceShipState(state);
 
 	vector<point> occupied;
@@ -387,14 +384,14 @@ void MyBot::place_ships(const string working_directory, const int BOARD_SIZE, ra
 		//debugplace << "Loop init " << ships[i].type << endl;
 
 		bool searchforpos = true;
-		
+
 		int x, y;
 		string dir;
 
 		while (searchforpos)
 		{
 			bool valid = true;
-			
+
 			random_device rd;
 			default_random_engine rng(rd());
 			uniform_int_distribution<int> randcoord(0, BOARD_SIZE - 1);
@@ -412,28 +409,28 @@ void MyBot::place_ships(const string working_directory, const int BOARD_SIZE, ra
 			case 0:
 				dir = "North";
 				//debugplace << "N" << endl;
-				for (int v = 0; v < ships[i].length; v++) { if (Utility::IsIn(occupied, { x, y + v })) { valid = false; /*debugplace << "Occupied" << endl;*/} }
+				for (int v = 0; v < ships[i].length; v++) { if (Utility::IsIn(occupied, { x, y + v })) { valid = false; /*debugplace << "Occupied" << endl;*/ } }
 				if (!(y + k >= 0 && y + k < BOARD_SIZE)) { valid = false; }
 				if (valid) { { for (int v = 0; v < ships[i].length; v++) { occupied.push_back({ x, y + v }); } } }
 				break;
 			case 1:
 				dir = "South";
 				//debugplace << "S" << endl;
-				for (int v = 0; v < ships[i].length; v++) { if (Utility::IsIn(occupied, { x, y - v })) { valid = false; /*debugplace << "Occupied" << endl;*/} }
+				for (int v = 0; v < ships[i].length; v++) { if (Utility::IsIn(occupied, { x, y - v })) { valid = false; /*debugplace << "Occupied" << endl;*/ } }
 				if (!(y - k >= 0 && y - k < BOARD_SIZE)) { valid = false; }
 				if (valid) { { for (int v = 0; v < ships[i].length; v++) { occupied.push_back({ x, y - v }); } } }
 				break;
 			case 2:
 				dir = "East";
 				//debugplace << "E" << endl;
-				for (int v = 0; v < ships[i].length; v++) { if (Utility::IsIn(occupied, { x + v, y })) { valid = false; /*debugplace << "Occupied" << endl;*/} }
+				for (int v = 0; v < ships[i].length; v++) { if (Utility::IsIn(occupied, { x + v, y })) { valid = false; /*debugplace << "Occupied" << endl;*/ } }
 				if (!(x + k >= 0 && x + k < BOARD_SIZE)) { valid = false; }
 				if (valid) { { for (int v = 0; v < ships[i].length; v++) { occupied.push_back({ x + v, y }); } } }
 				break;
 			case 3:
 				dir = "West";
 				//debugplace << "W" << endl;
-				for (int v = 0; v < ships[i].length; v++) { if (Utility::IsIn(occupied, { x - v, y })) { valid = false; /*debugplace << "Occupied" << endl;*/} }
+				for (int v = 0; v < ships[i].length; v++) { if (Utility::IsIn(occupied, { x - v, y })) { valid = false; /*debugplace << "Occupied" << endl;*/ } }
 				if (!(x - k >= 0 && x - k < BOARD_SIZE)) { valid = false; }
 				if (valid) { { for (int v = 0; v < ships[i].length; v++) { occupied.push_back({ x - v, y }); } } }
 				break;
@@ -442,12 +439,6 @@ void MyBot::place_ships(const string working_directory, const int BOARD_SIZE, ra
 		}
 		ofs << ships[i].type << " " << x << " " << y << " " << dir << endl;
 	}
-
-	/*ofs << "Carrier 1 1 East\n";
-	ofs << "Battleship 7 7 South\n";
-	ofs << "Cruiser 9 0 North\n";
-	ofs << "Submarine 4 4 West\n";
-	ofs << "Destroyer 0 9 East\n";*/
 }
 
 
@@ -461,10 +452,10 @@ int main(int argc, char** argv)
 	auto state = Utility::parse_state(working_directory, state_filename);
 
 	if (state["Phase"].GetInt() == 1) {
-		MyBot::place_ships(working_directory, state["MapDimension"].GetInt(), state);
+		Killer::place_ships(working_directory, state["MapDimension"].GetInt(), state);
 	}
 	else {
-		MyBot::fire_shot(working_directory, state);
+		Killer::fire_shot(working_directory, state);
 	}
 
 	return 0;
