@@ -22,9 +22,6 @@ bool Killer::HitHandler(const string working_directory, vector<point> valid_poin
 		{
 			if (Utility::IsIn(hits, { hits[i].x, hits[i].y + g }))
 			{
-				miss1 = false;
-				miss2 = false;
-
 				adj = true;
 				//hitdebug << "2" << endl;
 				for (int k = 1; k <= max - 2; k++)
@@ -55,13 +52,15 @@ bool Killer::HitHandler(const string working_directory, vector<point> valid_poin
 				}
 			}
 		}
-
+		
+		miss1 = false;
+		miss2 = false;
+		
 		for (int g = 1; g > -2; g -= 2)
 		{
 			if (Utility::IsIn(hits, { hits[i].x + g, hits[i].y }))
 			{
-				miss1 = false;
-				miss2 = false;
+				
 
 				adj = true;
 				//hitdebug << "10" << endl;
@@ -96,7 +95,7 @@ bool Killer::HitHandler(const string working_directory, vector<point> valid_poin
 
 		for (int f = 0; f < 3; f += 2)
 		{
-			if (Utility::IsIn(valid_points, { hits[i].x - 1 + f, hits[i].y - 1 }) || Utility::IsIn(valid_points, { hits[i].x - 1 + f, hits[i].y + 1 }))
+			if (Utility::IsIn(valid_points, { hits[i].x - 1 + f, hits[i].y - 1}) || Utility::IsIn(valid_points, { hits[i].x - 1 + f, hits[i].y + 1 }))
 			{
 				adj = false;
 			}

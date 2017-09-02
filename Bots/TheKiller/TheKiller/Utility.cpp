@@ -92,7 +92,10 @@ pointprobability Utility::probability_score(const string working_directory, cons
 		for (int i = 1 - k.length; i < 1; i++)
 		{
 			//prob << k.length << "Ship" << endl;
-			score += valid_placement(working_directory, BOARD_SIZE, k, i, { place.x, place.y }, validpos);
+			if (!ship[i].destroyed)
+			{
+				score += valid_placement(working_directory, BOARD_SIZE, k, i, { place.x, place.y }, validpos);
+			}
 		}
 	}
 
