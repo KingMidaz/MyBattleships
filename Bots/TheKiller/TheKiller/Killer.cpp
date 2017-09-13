@@ -370,11 +370,26 @@ label:
 void Killer::place_ships(const string working_directory, const int BOARD_SIZE, rapidjson::Document& state)
 {
 	ofstream ofs(working_directory + "/" + place_filename);
+	switch(BOARD_SIZE)
+	{
+	case 7:
+		ofs << "Destoyer North\n Battleship West\n Submarine West\n Cruiser East\n Carrier South" << endl;
+		break;
+	case 10:
+		ofs << "Destoyer North\n Battleship West\n Submarine West\n Cruiser East\n Carrier South" << endl;
+		break;
+	case 14:
+		ofs << "Destoyer North\n Battleship West\n Submarine West\n Cruiser East\n Carrier South" << endl;
+		break;
+	}
+	
+	
+	
 	//ofstream debugplace(working_directory + "/debugplace.txt");
 
 	//debugplace << "Place init" << endl;
 
-	auto ships = Ships::GetPlaceShipState(state);
+	/*auto ships = Ships::GetPlaceShipState(state);
 
 	vector<point> occupied;
 
@@ -415,36 +430,36 @@ void Killer::place_ships(const string working_directory, const int BOARD_SIZE, r
 			case 0:
 				dir = "North";
 				//debugplace << "N" << endl;
-				for (int v = 0; v < ships[i].length; v++) { if (Utility::IsIn(occupied, { x, y + v })) { valid = false; /*debugplace << "Occupied" << endl;*/ } }
-				if (!(y + k >= 0 && y + k < BOARD_SIZE)) { valid = false; }
-				if (valid) { { for (int v = 0; v < ships[i].length; v++) { occupied.push_back({ x, y + v }); } } }
-				break;
-			case 1:
-				dir = "South";
+				for (int v = 0; v < ships[i].length; v++) { if (Utility::IsIn(occupied, { x, y + v })) { valid = false; /*debugplace << "Occupied" << endl; } }*/
+				//if (!(y + k >= 0 && y + k < BOARD_SIZE)) { valid = false; }
+				//if (valid) { { for (int v = 0; v < ships[i].length; v++) { occupied.push_back({ x, y + v }); } } }
+				//break;
+			//case 1:
+				//dir = "South";
 				//debugplace << "S" << endl;
-				for (int v = 0; v < ships[i].length; v++) { if (Utility::IsIn(occupied, { x, y - v })) { valid = false; /*debugplace << "Occupied" << endl;*/ } }
-				if (!(y - k >= 0 && y - k < BOARD_SIZE)) { valid = false; }
-				if (valid) { { for (int v = 0; v < ships[i].length; v++) { occupied.push_back({ x, y - v }); } } }
-				break;
-			case 2:
-				dir = "East";
+				//for (int v = 0; v < ships[i].length; v++) { if (Utility::IsIn(occupied, { x, y - v })) { valid = false; /*debugplace << "Occupied" << endl;*/ } }
+				//if (!(y - k >= 0 && y - k < BOARD_SIZE)) { valid = false; }
+				//if (valid) { { for (int v = 0; v < ships[i].length; v++) { occupied.push_back({ x, y - v }); } } }
+				//break;
+			//case 2:
+				//dir = "East";
 				//debugplace << "E" << endl;
-				for (int v = 0; v < ships[i].length; v++) { if (Utility::IsIn(occupied, { x + v, y })) { valid = false; /*debugplace << "Occupied" << endl;*/ } }
-				if (!(x + k >= 0 && x + k < BOARD_SIZE)) { valid = false; }
-				if (valid) { { for (int v = 0; v < ships[i].length; v++) { occupied.push_back({ x + v, y }); } } }
-				break;
-			case 3:
-				dir = "West";
+				//for (int v = 0; v < ships[i].length; v++) { if (Utility::IsIn(occupied, { x + v, y })) { valid = false; /*debugplace << "Occupied" << endl;*/ } }
+				//if (!(x + k >= 0 && x + k < BOARD_SIZE)) { valid = false; }
+				//if (valid) { { for (int v = 0; v < ships[i].length; v++) { occupied.push_back({ x + v, y }); } } }
+				//break;
+			//case 3:
+				//dir = "West";
 				//debugplace << "W" << endl;
-				for (int v = 0; v < ships[i].length; v++) { if (Utility::IsIn(occupied, { x - v, y })) { valid = false; /*debugplace << "Occupied" << endl;*/ } }
-				if (!(x - k >= 0 && x - k < BOARD_SIZE)) { valid = false; }
+				//for (int v = 0; v < ships[i].length; v++) { if (Utility::IsIn(occupied, { x - v, y })) { valid = false; /*debugplace << "Occupied" << endl;*/ } }
+				/*if (!(x - k >= 0 && x - k < BOARD_SIZE)) { valid = false; }
 				if (valid) { { for (int v = 0; v < ships[i].length; v++) { occupied.push_back({ x - v, y }); } } }
 				break;
 			}
 			if (valid) { searchforpos = false; }
 		}
 		ofs << ships[i].type << " " << x << " " << y << " " << dir << endl;
-	}
+	}*/
 }
 
 
